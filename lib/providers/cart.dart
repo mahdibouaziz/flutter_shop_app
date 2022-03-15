@@ -26,6 +26,14 @@ class Cart with ChangeNotifier {
     return _items.length;
   }
 
+  double get totalAmount {
+    double total = 0;
+    _items.forEach((key, value) {
+      total += value.price * value.quantity;
+    });
+    return total;
+  }
+
   void addItem(String productId, double price, String title) {
     if (_items.containsKey(productId)) {
       _items.update(
