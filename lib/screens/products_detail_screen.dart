@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_shop_app/models/product.dart';
+import 'package:flutter_shop_app/providers/products.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   static const routeName = "/product-detail";
@@ -10,9 +13,11 @@ class ProductDetailScreen extends StatelessWidget {
     final String productId =
         ModalRoute.of(context)!.settings.arguments as String;
     // Get all the data for this product id (state management)
+    final Product loadedProduct =
+        Provider.of<Products>(context, listen: false).findById(productId);
 
     return Scaffold(
-      appBar: AppBar(title: Text("test")),
+      appBar: AppBar(title: Text(loadedProduct.title)),
     );
   }
 }
