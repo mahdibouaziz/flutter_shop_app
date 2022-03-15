@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
+      // we use create because we are creating a new instance (for better performance)
       create: (context) => Products(),
       child: MaterialApp(
         title: "MyShop",
