@@ -49,6 +49,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void saveForm() {
+    final isValid = _form.currentState?.validate() as bool;
+    if (!isValid) {
+      return;
+    }
     _form.currentState?.save();
     print(_editedProduct.title);
     print(_editedProduct.price);
@@ -90,6 +94,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   title: val as String,
                 );
               },
+              validator: (val) {
+                // if we return a null => this is a valid
+                // if we return a text this is our error message
+                if (val!.isEmpty) {
+                  return "Please provide a value";
+                }
+                return null;
+              },
             ),
             TextFormField(
               decoration: const InputDecoration(labelText: "Price"),
@@ -108,6 +120,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   title: _editedProduct.title,
                 );
               },
+              validator: (val) {
+                // if we return a null => this is a valid
+                // if we return a text this is our error message
+                if (val!.isEmpty) {
+                  return "Please provide a value";
+                }
+                if (double.tryParse(val) == null) {
+                  return 'Please enter a valid number';
+                }
+                if (double.parse(val) <= 0) {
+                  return 'Please neter a valid price';
+                }
+                return null;
+              },
             ),
             TextFormField(
               decoration: const InputDecoration(labelText: "Description"),
@@ -122,6 +148,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   price: _editedProduct.price,
                   title: _editedProduct.title,
                 );
+              },
+              validator: (val) {
+                if (val!.isEmpty) {
+                  return "Please enter a value";
+                }
+                return null;
               },
             ),
             Row(
@@ -171,6 +203,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       );
                     },
                     focusNode: _imageUrlFocusNode,
+                    validator: (val) {
+                      if (val!.isEmpty) {
+                        return "Please provide a value";
+                      }
+                      return null;
+                    },
                   ),
                 ),
               ],
