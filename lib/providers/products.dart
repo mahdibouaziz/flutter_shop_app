@@ -56,6 +56,28 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == productId);
   }
 
+  Future<void> fetchAndSetProducts() async {
+    try {
+      final response = await http.get(dbUrl);
+      print(json.decode(response.body));
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      _items = [];
+      extractedData.forEach((key, value) {
+        _items.add(Product(
+          id: key,
+          description: value['description'],
+          imageUrl: value['imageUrl'],
+          price: value['price'],
+          title: value['title'],
+          isFavorite: value['isFavorite'],
+        ));
+      });
+      notifyListeners();
+    } catch (error) {
+      throw error;
+    }
+  }
+
   Future<void> addProduct(Product product) async {
     try {
       final response = await http.post(
