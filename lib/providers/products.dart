@@ -107,11 +107,22 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(String productId, Product product) {
+  Future<void> updateProduct(String productId, Product product) async {
     int index = _items.indexWhere((element) => element.id == productId);
 
     if (index != -1) {
       _items[index] = product;
+
+      final dbUrl1 = Uri.parse(
+          "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json");
+
+      await http.patch(dbUrl1,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'imageUrl': product.imageUrl,
+            'price': product.price,
+          }));
       notifyListeners();
     }
   }

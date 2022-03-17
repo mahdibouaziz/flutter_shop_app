@@ -101,7 +101,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
       final oldProduct = productContainer.findById(productId);
       _editedProduct.isFavorite = oldProduct.isFavorite;
 
-      productContainer.updateProduct(productId, _editedProduct);
+      await productContainer.updateProduct(productId, _editedProduct);
+      setState(() {
+        _isLoading = false;
+        Navigator.of(context).pop();
+      });
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
