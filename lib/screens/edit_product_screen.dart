@@ -30,7 +30,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   Product _editedProduct = Product(
     description: '',
-    id: DateTime.now().toString(),
+    id: null,
     imageUrl: '',
     price: 0,
     title: '',
@@ -48,10 +48,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.didChangeDependencies();
     if (isInit) {
       isInit = false;
-      final productId = ModalRoute.of(context)!.settings.arguments as String;
+      final productId = ModalRoute.of(context)!.settings.arguments;
       if (productId != null) {
-        final _editedProduct =
-            Provider.of<Products>(context, listen: false).findById(productId);
+        final _editedProduct = Provider.of<Products>(context, listen: false)
+            .findById(productId as String);
         _initValues = {
           'title': _editedProduct.title,
           'description': _editedProduct.description,

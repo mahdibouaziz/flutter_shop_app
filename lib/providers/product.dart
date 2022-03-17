@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class Product with ChangeNotifier {
-  late final String id;
+  String? id;
   final String title;
   final String description;
   final String imageUrl;
@@ -10,7 +10,7 @@ class Product with ChangeNotifier {
 
   Product(
       {required this.description,
-      required this.id,
+      this.id,
       required this.imageUrl,
       required this.price,
       required this.title,
