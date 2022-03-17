@@ -57,7 +57,7 @@ class Products with ChangeNotifier {
       title: product.title,
       id: DateTime.now().toString(),
     );
-    _items.add(product);
+    _items.add(newProduct);
     notifyListeners();
   }
 
