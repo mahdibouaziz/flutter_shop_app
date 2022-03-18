@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_shop_app/models/http_exception.dart';
 import 'package:flutter_shop_app/providers/product.dart';
 
 import 'package:http/http.dart' as http;
@@ -127,8 +128,25 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String productId) {
+  Future<void> deleteProduct(String productId) async {
+    // using optimistic delete: (delete an element anad if an error happens return it back)
+    final dbUrl1 = Uri.parse(
+        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json");
+
+    final existingProductIndex =
+        _items.indexWhere((element) => element.id == productId);
+    dynamic existingProduct = _items[existingProductIndex];
+
     _items.removeWhere((element) => element.id == productId);
     notifyListeners();
+
+    final response = await http.delete(dbUrl1);
+    if (response.statusCode >= 400) {
+      // if an error happens => the product still exists
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException("Could not delete Product");
+    }
+    existingProduct = null;
   }
 }
