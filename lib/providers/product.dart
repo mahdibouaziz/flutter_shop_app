@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter_shop_app/models/http_exception.dart';
+
+import 'package:http/http.dart' as http;
 
 class Product with ChangeNotifier {
   String? id;
@@ -16,8 +21,22 @@ class Product with ChangeNotifier {
       required this.title,
       this.isFavorite = false});
 
-  void toggleFavoriteStatus() {
+  Future<void> toggleFavoriteStatus() async {
+    final dbUrl1 = Uri.parse(
+        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products/$id.json");
+
     isFavorite = !isFavorite;
     notifyListeners();
+
+    final response = await http.patch(dbUrl1,
+        body: json.encode({
+          'isFavorite': isFavorite,
+        }));
+
+    if (response.statusCode >= 400) {
+      isFavorite = !isFavorite;
+      notifyListeners();
+      throw HttpException("Failed to turn this product into favorites");
+    }
   }
 }
