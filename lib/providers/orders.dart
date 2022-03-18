@@ -32,6 +32,38 @@ class Orders with ChangeNotifier {
     return _orders.length;
   }
 
+  Future<void> fetchAndSetOrders() async {
+    final response = await http.get(dbUrl);
+
+    Map<String, dynamic> data = json.decode(response.body);
+    if (data == null) {
+      return;
+    }
+
+    data.forEach((key, value) {
+      _orders.insert(
+        0,
+        OrderItem(
+          id: key,
+          amount: value['amount'],
+          dateTime: DateTime.parse(value['datetime']),
+          products: (value['products'] as List<dynamic>)
+              .map(
+                (e) => CartItem(
+                  id: e['id'],
+                  price: e['price'],
+                  quantity: e['quantity'],
+                  title: e['title'],
+                ),
+              )
+              .toList(),
+        ),
+      );
+    });
+
+    notifyListeners();
+  }
+
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final timestamp = DateTime.now();
 
