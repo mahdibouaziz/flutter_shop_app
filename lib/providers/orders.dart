@@ -43,8 +43,13 @@ class Orders with ChangeNotifier {
     if (response.body.isEmpty) {
       return;
     }
+    Map<String, dynamic> data = {};
+    try {
+      data = json.decode(response.body);
+    } catch (err) {
+      print(err);
+    }
 
-    Map<String, dynamic> data = json.decode(response.body);
     if (data == null) {
       return;
     }
