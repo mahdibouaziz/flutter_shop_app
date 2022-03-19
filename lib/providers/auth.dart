@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_shop_app/models/http_exception.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth with ChangeNotifier {
   String? _token;
@@ -30,7 +31,7 @@ class Auth with ChangeNotifier {
     return _userId;
   }
 
-  void logout() {
+  Future<void> logout() async {
     _token = null;
     _expireDate = null;
     _userId = null;
@@ -38,6 +39,10 @@ class Auth with ChangeNotifier {
       authTimer!.cancel();
       authTimer = null;
     }
+    final prefs = await SharedPreferences.getInstance();
+    // prefs.remove('userData');
+    prefs.clear();
+
     notifyListeners();
   }
 
@@ -51,6 +56,32 @@ class Auth with ChangeNotifier {
       Duration(seconds: timeToLogout),
       logout,
     );
+  }
+
+  Future<bool> tryAutoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    // verify we have stored data
+    if (!prefs.containsKey("userData")) {
+      return false;
+    }
+
+    final extractedUserData = json.decode(prefs.getString("userData") as String)
+        as Map<String, dynamic>;
+
+    // verify the expire date
+    final expireDate = DateTime.parse(extractedUserData['expireDate']);
+    if (!expireDate.isAfter(DateTime.now())) {
+      return false;
+    }
+
+    // re define the data
+    _token = extractedUserData['token'];
+    _userId = extractedUserData['userId'];
+    _expireDate = expireDate;
+    notifyListeners();
+    _autoLogout();
+
+    return true;
   }
 
   Future<void> signup(String email, String password) async {
@@ -79,6 +110,16 @@ class Auth with ChangeNotifier {
       );
       _autoLogout();
       notifyListeners();
+
+      final prefs = await SharedPreferences.getInstance();
+
+      final userData = json.encode({
+        "token": _token,
+        "userId": _userId,
+        "expireDate": _expireDate?.toIso8601String(),
+      });
+
+      prefs.setString("userData", userData);
     } catch (error) {
       rethrow;
     }
@@ -110,6 +151,16 @@ class Auth with ChangeNotifier {
       );
       _autoLogout();
       notifyListeners();
+
+      final prefs = await SharedPreferences.getInstance();
+
+      final userData = json.encode({
+        "token": _token,
+        "userId": _userId,
+        "expireDate": _expireDate?.toIso8601String(),
+      });
+
+      prefs.setString("userData", userData);
     } catch (error) {
       rethrow;
     }
