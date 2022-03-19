@@ -125,7 +125,7 @@ class Products with ChangeNotifier {
       _items[index] = product;
 
       final dbUrl1 = Uri.parse(
-          "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json");
+          "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json?auth=$authToken");
 
       await http.patch(dbUrl1,
           body: json.encode({
@@ -141,7 +141,7 @@ class Products with ChangeNotifier {
   Future<void> deleteProduct(String productId) async {
     // using optimistic delete: (delete an element anad if an error happens return it back)
     final dbUrl1 = Uri.parse(
-        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json");
+        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products/$productId.json?auth=$authToken");
 
     final existingProductIndex =
         _items.indexWhere((element) => element.id == productId);

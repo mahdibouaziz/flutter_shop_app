@@ -19,8 +19,9 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  final dbUrl = Uri.parse(
-      "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/orders.json");
+  String authToken;
+
+  Orders(this.authToken, this._orders);
 
   List<OrderItem> _orders = [];
 
@@ -33,6 +34,9 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
+    final dbUrl = Uri.parse(
+        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken");
+
     final response = await http.get(dbUrl);
 
     Map<String, dynamic> data = json.decode(response.body);
@@ -65,6 +69,9 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
+    final dbUrl = Uri.parse(
+        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken");
+
     final timestamp = DateTime.now();
 
     final response = await http.post(

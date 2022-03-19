@@ -38,8 +38,11 @@ class MyApp extends StatelessWidget {
           // we use create because we are creating a new instance (for better performance)
           create: (context) => Cart(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Orders(),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (context) => Orders("", []),
+          update: (context, authContainer, previousOrders) => Orders(
+              authContainer.token as String,
+              previousOrders == null ? [] : previousOrders.orders),
         ),
       ],
       child: Consumer<Auth>(
