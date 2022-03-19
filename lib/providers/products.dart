@@ -7,8 +7,8 @@ import 'package:flutter_shop_app/providers/product.dart';
 import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
-  final String authToken;
-  final String userId;
+  final String? authToken;
+  final String? userId;
 
   Products(this.authToken, this.userId, this._items);
 

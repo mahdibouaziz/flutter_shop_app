@@ -19,8 +19,8 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  String authToken;
-  String userId;
+  String? authToken;
+  String? userId;
 
   Orders(this.authToken, this.userId, this._orders);
 
