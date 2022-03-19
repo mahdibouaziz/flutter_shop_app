@@ -59,9 +59,14 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == productId);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final dbUrl = Uri.parse(
-        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken");
+  Future<void> fetchAndSetProducts({bool filterByUser = false}) async {
+    Uri dbUrl = Uri.parse(
+        'https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken');
+
+    if (filterByUser) {
+      dbUrl = Uri.parse(
+          'https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken&orderBy="userId"&equalTo="$userId"');
+    }
 
     try {
       // get all the products
@@ -107,6 +112,7 @@ class Products with ChangeNotifier {
           "description": product.description,
           "imageUrl": product.imageUrl,
           "price": product.price,
+          "userId": userId,
         }),
       );
 
