@@ -8,7 +8,20 @@ import 'package:http/http.dart' as http;
 class Auth with ChangeNotifier {
   String? _token;
   DateTime? _expireDate;
-  String? _userID;
+  String? _userId;
+
+  bool get isAuth {
+    return token != null;
+  }
+
+  String? get token {
+    if (_expireDate != null &&
+        _expireDate!.isAfter(DateTime.now()) &&
+        _token != null) {
+      return _token as String;
+    }
+    return null;
+  }
 
   Future<void> signup(String email, String password) async {
     final uri = Uri.parse(
@@ -26,6 +39,15 @@ class Auth with ChangeNotifier {
       if (responseData['error'] != null) {
         throw HttpException(responseData['errors']['message']);
       }
+
+      _token = responseData['idToken'];
+      _userId = responseData['localId'];
+      _expireDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseData['expiresIn']),
+        ),
+      );
+      notifyListeners();
     } catch (error) {
       rethrow;
     }
@@ -47,6 +69,15 @@ class Auth with ChangeNotifier {
       if (responseData['error'] != null) {
         throw HttpException(responseData['errors']['message']);
       }
+
+      _token = responseData['idToken'];
+      _userId = responseData['localId'];
+      _expireDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseData['expiresIn']),
+        ),
+      );
+      notifyListeners();
     } catch (error) {
       rethrow;
     }

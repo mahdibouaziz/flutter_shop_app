@@ -7,8 +7,9 @@ import 'package:flutter_shop_app/providers/product.dart';
 import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
-  final dbUrl = Uri.parse(
-      "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products.json");
+  final String authToken;
+
+  Products(this.authToken, this._items);
 
   List<Product> _items = [
     Product(
@@ -58,6 +59,9 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
+    final dbUrl = Uri.parse(
+        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken");
+
     try {
       final response = await http.get(dbUrl);
       print(json.decode(response.body));
@@ -83,6 +87,9 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
+    final dbUrl = Uri.parse(
+        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken");
+
     try {
       final response = await http.post(
         dbUrl,
