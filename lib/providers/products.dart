@@ -8,8 +8,9 @@ import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> _items = [
     Product(
@@ -63,6 +64,7 @@ class Products with ChangeNotifier {
         "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken");
 
     try {
+      // get all the products
       final response = await http.get(dbUrl);
       print(json.decode(response.body));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -70,6 +72,13 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+
+      // get the favorite products
+      final dbUrlFavorite = Uri.parse(
+          "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/userFavorites/$userId.json?auth=$authToken");
+      final favoriteResponse = await http.get(dbUrlFavorite);
+      final favoriteData = json.decode(favoriteResponse.body);
+
       extractedData.forEach((key, value) {
         _items.add(Product(
           id: key,
@@ -77,7 +86,7 @@ class Products with ChangeNotifier {
           imageUrl: value['imageUrl'],
           price: value['price'],
           title: value['title'],
-          isFavorite: value['isFavorite'],
+          isFavorite: favoriteData == null ? false : favoriteData[key] ?? false,
         ));
       });
       notifyListeners();
@@ -98,7 +107,6 @@ class Products with ChangeNotifier {
           "description": product.description,
           "imageUrl": product.imageUrl,
           "price": product.price,
-          "isFavorite": product.isFavorite,
         }),
       );
 

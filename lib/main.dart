@@ -28,10 +28,11 @@ class MyApp extends StatelessWidget {
         ),
         //Set a provider which depends in another provider (in this case the Products providerdepends on Auth provider)
         ChangeNotifierProxyProvider<Auth, Products>(
-          create: (context) => Products("", []),
+          create: (context) => Products("", "", []),
           // to get the token
           update: (context, authContainer, previousProducts) => Products(
               authContainer.token as String,
+              authContainer.userId,
               previousProducts == null ? [] : previousProducts.items),
         ),
         ChangeNotifierProvider(
