@@ -20,8 +20,9 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   String authToken;
+  String userId;
 
-  Orders(this.authToken, this._orders);
+  Orders(this.authToken, this.userId, this._orders);
 
   List<OrderItem> _orders = [];
 
@@ -35,14 +36,20 @@ class Orders with ChangeNotifier {
 
   Future<void> fetchAndSetOrders() async {
     final dbUrl = Uri.parse(
-        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken");
+        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken");
 
     final response = await http.get(dbUrl);
+
+    if (response.body.isEmpty) {
+      return;
+    }
 
     Map<String, dynamic> data = json.decode(response.body);
     if (data == null) {
       return;
     }
+
+    _orders = [];
 
     data.forEach((key, value) {
       _orders.insert(
@@ -70,7 +77,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final dbUrl = Uri.parse(
-        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken");
+        "https://flutter-course-536b7-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken");
 
     final timestamp = DateTime.now();
 
