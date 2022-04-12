@@ -139,7 +139,7 @@ class Auth with ChangeNotifier {
       // print(json.decode(response.body));
       final responseData = json.decode(response.body);
       if (responseData['error'] != null) {
-        throw HttpException(responseData['errors']['message']);
+        throw HttpException(responseData['error']['errors'][0]['message']);
       }
 
       _token = responseData['idToken'];
